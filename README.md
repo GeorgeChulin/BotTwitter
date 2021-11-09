@@ -6,9 +6,9 @@
 ### 1. Copiar y pegar el código
 ### 2. Descargar el proyecto desde el cuadrado verde que pone 'Code'
 Dentro del código, **hay diferentes funciones** con diferentes opciones para el bot.
-Para cada funcion o conjunto de funciones, hay una serie de** comentarios que indica lo que hace** y que indican los** parametros que se pueden modificar.**
+Para cada funcion o conjunto de funciones, hay una serie de **comentarios que indica lo que hace** y que indican los **parametros que se pueden modificar.**
 	
-**Es recomendable leer todos los comentarios del código previamente antes de lanzar la aplicación.  **
+**Es recomendable leer todos los comentarios del código previamente antes de lanzar la aplicación.**
 
 # Twitter Token
 
@@ -16,7 +16,7 @@ Para cada funcion o conjunto de funciones, hay una serie de** comentarios que in
 
     [Twitter Developer](https://developer.twitter.com/en)
 
-2. Hacer **clic en 'Apply'** arriba a la derecha y despues en** 'Apply for a developer account'.**
+2. Hacer **clic en 'Apply'** arriba a la derecha y despues en **'Apply for a developer account'.**
 
 3. Hobbylist, make a bot
 
@@ -28,7 +28,7 @@ Para cada funcion o conjunto de funciones, hay una serie de** comentarios que in
 
 7. **Abir el código** con un entorno de desarrollo (Para descargar Visual Studio Code leer el apartado de requisitos)
 
-8. Dentro de la App tendremos un apartado 'Keys and tokens', de donde **cogeremos y pegaremos en el lugar correspondiente del código** los** 'Customer keys'(API Key and Secret) y 'Access Token and Secret'**
+8. Dentro de la App tendremos un apartado 'Keys and tokens', de donde **cogeremos y pegaremos en el lugar correspondiente del código** los **'Customer keys'(API Key and Secret) y 'Access Token and Secret'**
 
 ---
 # Requisitos
@@ -69,6 +69,6 @@ Con las librerías previamente instaladas, **abrir la terminal en el directorio 
 **Dejarlo ejecutándose** todo el tiempo que queramos.
 
 ## 2. Entorno de Desarrollo
-**Con python instalado correctamente en el pc y el plugin Python añadido** a Visual Studio Code,** pulsar en el botón *play*** que aparecerá arriba a la derecha.
+**Con python instalado correctamente en el pc y el plugin Python añadido** a Visual Studio Code, **pulsar en el botón *play*** que aparecerá arriba a la derecha.
 
 **La primera vez** que pulsemos el botón nos saldrá un recuadro en la parte superior para elegir la configuración, **eligiremos *python3.9 para Windows***
