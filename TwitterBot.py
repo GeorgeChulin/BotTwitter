@@ -153,7 +153,7 @@ def reply_all_person_tweets():
     for tweet in tweepy.Cursor(api.user_timeline, id=idperson, exclude_replies="True", include_rts="False").items(
             nItem):
         try:
-            if (tweet.created_at > startDate):
+            if tweet.created_at > startDate and not bool(tweet.in_reply_to_status_id):
                 text = "@" + idperson + " " + replyText
                 api.update_status(text, in_reply_to_status_id=tweet.id)
                 time.sleep(40)
@@ -168,7 +168,7 @@ def reply_all_person_tweets_photo():
     for tweet in tweepy.Cursor(api.user_timeline, id=idperson, exclude_replies="True", include_rts="False").items(
             nItem):
         try:
-            if tweet.created_at > startDate:
+            if tweet.created_at > startDate and not bool(tweet.in_reply_to_status_id):
                 text = "@" + idperson + " " + replyText
                 api.update_status_with_media(filename=image, status=text, in_reply_to_status_id=tweet.id)
                 time.sleep(40)
