@@ -24,6 +24,7 @@ api = tweepy.API(auth, wait_on_rate_limit=True)
       ╚═══╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝╚══════╝
                                                                         """
 
+lastReply = 0  # No tocar
 lastTweet = 0  # No tocar
 
 # Número de tweets que leerá con cada función
@@ -35,9 +36,13 @@ startDate = datetime.datetime(2021, 11, 9, 00, 00, 00, tzinfo=datetime.timezone.
 # si no quiere poner ninguna dejar solo los corchetes
 # ES RECOMENDABLE PONER LAS FOTOS EN LA MISMA CARPETA QUE EL BOT O CREAR UNA CARPETA
 # EN EL MISMO DIRECTORIO QUE EL BOT (COMO EN EL EJEMPLO)
-# INDICAR LA RUTA RELATIVA (DESDE EL DIRECTORIO DEL BOT) DE LAS FOTOS
+# INDICAR LA RUTA ABSOLUTA (DESDE EL DIRECTORIO DEL BOT) DE LAS FOTOS
 
-images = ['fotos/foto1.jpeg', 'fotos/foto2.jpeg', 'fotos/foto3.jpeg', 'fotos/foto4.jpeg', 'fotos/foto5.jpeg']
+images = ['D:\\Usuario\\Documentos\\Bot\\fotos\\foto1.jpeg',
+          'D:\\Usuario\\Documentos\\Bot\\fotos\\foto2.jpeg',
+          'D:\\Usuario\\Documentos\\Bot\\fotos\\foto3.jpeg',
+          'D:\\Usuario\\Documentos\\Bot\\fotos\\foto4.jpeg',
+          'D:\\Usuario\\Documentos\\Bot\\fotos\\foto5.jpeg', ]
 # si no quisieramos usar fotos, poner: images = []
 
 image = "NULL"  # NO TOCAR
@@ -75,30 +80,44 @@ retweetText = 'texto de ejemplo'
 
 def retweet_comment():
     print("Ejecutando retweet_comment...")
-    for tweet in tweepy.Cursor(api.search_tweets, q=hastag, count=100).items(nItem):
-        if not bool(tweet.in_reply_to_status_id):
+    global lastRetweet
+    statuses = []
+    for status in tweepy.Cursor(api.search_tweets, q=hastag, since_id=lastRetweet).items(
+            nItem):
+        statuses.append(status)
+    for tweet in reversed(statuses):
+        if not bool(tweet.in_reply_to_status_id) and not "RT" in tweet.text:
             try:
                 tweet_to_quote_url = "https://twitter.com/anyuser/status/" + tweet.id_str
                 api.update_status(retweetText, attachment_url=tweet_to_quote_url)
                 print("Tweet citado correctamente: ", tweet_to_quote_url)
+                time.sleep(40)
+                lastRetweet = tweet.id
             except Exception as err:
                 print(err)
     print("Fin de retweet_comment")
 
 
 def retweet_comment_photo():
-    print("Ejecutando retweet_comment_photo...")
-
-    for tweet in tweepy.Cursor(api.search_tweets, q=hastag, count=100).items(nItem):
-        if not bool(tweet.in_reply_to_status_id):
+    print("Ejecutando retweet_comment...")
+    global lastRetweet
+    statuses = []
+    for status in tweepy.Cursor(api.search_tweets, q=hastag, since_id=lastRetweet).items(
+            nItem):
+        statuses.append(status)
+    for tweet in reversed(statuses):
+        if not bool(tweet.in_reply_to_status_id) and not "RT" in tweet.text:
             try:
                 tweet_to_quote_url = "https://twitter.com/anyuser/status/" + tweet.id_str
-                api.update_status_with_media(filename=image, status=retweetText, attachment_url=tweet_to_quote_url)
-                print("Tweet citado con imagen correctamente: ", tweet_to_quote_url)
-
+                api.update_status_with_media(filename=image, status=retweetText, in_reply_to_status_id=tweet.id)
+                print("Tweet respondido con imagen correctamente: ", "https://twitter.com/anyuser/status/" +
+                      tweet.id_str)
+                time.sleep(40)
+                lastRetweet = tweet.id
+                nextPhoto()
             except Exception as err:
                 print(err)
-    print("Fin de retweet_comment_photo")
+    print("Fin de retweet_comment")
 
 
 # Retweet (#hastag)
@@ -156,8 +175,8 @@ def reply_all_person_tweets():
             if tweet.created_at > startDate and not bool(tweet.in_reply_to_status_id):
                 text = "@" + idperson + " " + replyText
                 api.update_status(text, in_reply_to_status_id=tweet.id)
-                time.sleep(40)
                 print("Tweet respondido correctamente: ", "https://twitter.com/anyuser/status/" + tweet.id_str)
+                time.sleep(40)
         except Exception as err:
             print(err)
     print("Fin de reply_all_person_tweets")
@@ -171,10 +190,10 @@ def reply_all_person_tweets_photo():
             if tweet.created_at > startDate and not bool(tweet.in_reply_to_status_id):
                 text = "@" + idperson + " " + replyText
                 api.update_status_with_media(filename=image, status=text, in_reply_to_status_id=tweet.id)
-                time.sleep(40)
-                nextPhoto()
                 print("Tweet respondido con imagen correctamente: ", "https://twitter.com/anyuser/status/" +
                       tweet.id_str)
+                time.sleep(40)
+                nextPhoto()
         except Exception as err:
             print(err)
     print("Fin de reply_all_person_tweets_photo")
@@ -196,9 +215,9 @@ idlista = 123  # id de la lista que se quiere usar (poner el número sin comilla
 
 def reply_all_list_tweets():
     print("Ejecutando reply_all_list_tweets...")
-    global lastTweet
+    global lastReply
     statuses = []
-    for status in tweepy.Cursor(api.list_timeline, list_id=idlista, include_rts="False", since_id=lastTweet).items(
+    for status in tweepy.Cursor(api.list_timeline, list_id=idlista, include_rts="False", since_id=lastReply).items(
             nItem):
         statuses.append(status)
     for tweet in reversed(statuses):
@@ -206,10 +225,9 @@ def reply_all_list_tweets():
             if tweet.created_at > startDate and not bool(tweet.in_reply_to_status_id):
                 text = "@" + tweet.user.screen_name + " " + replyText
                 api.update_status(text, in_reply_to_status_id=tweet.id)
-                time.sleep(40)
-                lastTweet = tweet.id
                 print("Tweet respondido correctamente: ", "https://twitter.com/anyuser/status/" + tweet.id_str)
-
+                time.sleep(40)
+                lastReply = tweet.id
         except Exception as err:
             print(err)
     print("Fin de reply_all_list_tweets...")
@@ -217,10 +235,9 @@ def reply_all_list_tweets():
 
 def reply_all_list_tweets_photo():
     print("Ejecutando reply_all_list_tweets_photo...")
-
-    global lastTweet
+    global lastReply
     statuses = []
-    for status in tweepy.Cursor(api.list_timeline, list_id=idlista, include_rts="False", since_id=lastTweet).items(
+    for status in tweepy.Cursor(api.list_timeline, list_id=idlista, include_rts="False", since_id=lastReply).items(
             nItem):
         statuses.append(status)
     for tweet in reversed(statuses):
@@ -228,11 +245,11 @@ def reply_all_list_tweets_photo():
             if tweet.created_at > startDate and not bool(tweet.in_reply_to_status_id):
                 text = "@" + tweet.user.screen_name + " " + replyText
                 api.update_status_with_media(filename=image, status=text, in_reply_to_status_id=tweet.id)
-                time.sleep(40)
-                lastTweet = tweet.id
-                nextPhoto()
                 print("Tweet respondido con imagen correctamente: ", "https://twitter.com/anyuser/status/" +
                       tweet.id_str)
+                time.sleep(40)
+                lastReply = tweet.id
+                nextPhoto()
         except Exception as err:
             print(err)
     print("Ejecutando reply_all_list_tweets_photo...")
@@ -297,12 +314,13 @@ def delete():
 #####################################################
 def inicio():
     last_reply()
+    last_retweet()
     initPhoto()
 
 
 # Esta función se usa al iniciar el programa para recoger el ID del ultimo tweet respondido
 def last_reply():
-    global lastTweet
+    global lastReply
     statuses = []
     for status in tweepy.Cursor(api.user_timeline).items(50):
         if not "RT" in status.text:
@@ -319,6 +337,30 @@ def last_reply():
         lastTweet = 1
 
 
+def last_retweet():
+    global lastRetweet
+    statuses = []
+    for status in tweepy.Cursor(api.user_timeline, exclude_replies="True", include_rts="False").items(50):
+        if not "RT" in status.text:
+            try:
+                statuses.append(status)
+
+            except Exception as err:
+                print(err)
+    i = 0
+    if len(statuses) != 0:
+        while not bool(statuses[i].is_quote_status) and i < len(statuses) - 1:
+            i += 1
+        lastRetweet = str(statuses[i].entities['urls'])
+        lastRetweet = lastRetweet.split(", ")
+        lastRetweet = lastRetweet[1].split("'expanded_url': 'https://twitter.com/anyuser/status/")
+        lastRetweet = lastRetweet[1].split("'")
+        lastRetweet = lastRetweet[0]
+        print("https://twitter.com/anyuser/status/" + str(lastRetweet))
+    else:
+        lastRetweet = 1
+
+
 def initPhoto():
     global image
     if len(image) > 0:
@@ -327,8 +369,12 @@ def initPhoto():
 
 def nextPhoto():
     global image
-    x = (images.index(image) + 1) % 5
+    x = (images.index(image)) % len(images) - 1
     image = images[x]
+
+
+def nada():
+    i = 1 + 1
 
 
 #####################################################
